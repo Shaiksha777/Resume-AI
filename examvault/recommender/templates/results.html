@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skill Gap Analysis</title>
+<style>
+    :root {
+        --text-color-dark: #111827;
+        --text-color-light: #374151;
+        --blue-primary: #2563eb;
+        --blue-light: #eff6ff;
+        --gray-bg: #f9fafb;
+        --gray-border: #d1d5db;
+        --shadow-light: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+        --shadow-md: 0 4px 6px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.03);
+    }
+
+    body {
+        font-family: 'Inter', system-ui, -apple-system, Roboto, "Segoe UI", Arial, sans-serif;
+        margin: 0;
+        background-color: var(--gray-bg);
+        color: var(--text-color-dark);
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    /* Navbar */
+    nav {
+        width: 100%;
+        background-color: #fff;
+        padding: 15px 40px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
+    nav a { text-decoration: none; color: var(--blue-primary); font-weight: bold; }
+
+    .container {
+        width: 100%;
+        max-width: 1400px;
+        margin: 20px auto;
+        padding: 20px 40px;
+        box-sizing: border-box;
+    }
+
+    .section-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--text-color-dark);
+        margin-bottom: 15px;
+        position: relative;
+        display: inline-block;
+    }
+
+    .section-title::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        bottom: -5px;
+        width: 70%;
+        height: 3px;
+        background-color: var(--blue-primary);
+        border-radius: 2px;
+    }
+
+    /* Skill boxes */
+    .skill-box {
+        background: #fff;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: var(--shadow-light);
+        margin-bottom: 20px;
+    }
+    .badge-skill {
+        border-radius: 50px;
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+        margin: 3px;
+        display: inline-block;
+        color: #fff;
+    }
+    .badge-detected { background-color: #0f9d58; }
+    .badge-missing { background-color: #d93025; }
+
+    /* Courses */
+    .recommendations-wrapper {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        margin-top: 20px;
+    }
+
+    .course-card {
+        background-color: #fff;
+        border: 1px solid var(--gray-border);
+        border-radius: 10px;
+        box-shadow: var(--shadow-light);
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .course-card:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-md);
+    }
+    .course-card h4 a {
+        color: var(--text-color-dark);
+        text-decoration: none;
+    }
+    .course-card p { margin: 5px 0; color: var(--text-color-light); font-size: 0.85rem; }
+    .course-card .provider { color: var(--blue-primary); font-weight: 500; }
+    .start-button {
+        background-color: #0749ad;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 20px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 15px;
+        transition: background 0.2s;
+    }
+    .start-button:hover { background-color: #b02620; }
+
+    /* Responsive */
+    @media (max-width: 1024px) { .recommendations-wrapper { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 768px) { .recommendations-wrapper { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<nav>
+    <a href="/">Home</a>
+    <a href="#">Skill Gap Analysis</a>
+</nav>
+
+<div class="container">
+
+    <!-- Role Summary -->
+    <div class="section-title">Role Summary</div>
+    <p><strong>{{ role }}</strong> — Skill coverage: {{ coverage }}%</p>
+
+    <!-- Skills -->
+    <div class="skill-box">
+        <div class="section-title">Your Skills</div>
+        {% if resume_skills %}
+            {% for s in resume_skills %}
+                <span class="badge-skill badge-detected">{{ s }}</span>
+            {% endfor %}
+        {% else %}
+            <span class="text-muted fst-italic">None</span>
+        {% endif %}
+    </div>
+
+    <div class="skill-box">
+        <div class="section-title">Missing Skills</div>
+        {% if missing %}
+            {% for s in missing %}
+                <span class="badge-skill badge-missing">{{ s }}</span>
+            {% endfor %}
+        {% else %}
+            <span class="text-muted fst-italic">None</span>
+        {% endif %}
+    </div>
+<br><br><br>
+<hr>
+<br><br>
+    <!-- Courses -->
+    <div class="section-title">Recommended Courses to Close the Skill GAP</div>
+    <div class="recommendations-wrapper">
+        {% for group in recommendations %}
+            {% if group.courses %}
+                {% for c in group.courses %}
+                <div class="course-card">
+                    <div>
+                        <h4>
+                          <a href="{{ c.url|default:'https://www.youtube.com/results?search_query='|add:group.skill }}" target="_blank">
+                            {{ c.name }}
+                          </a>
+                        </h4>
+                        <p>Provider: <span class="provider">{{ c.platform|default:"YouTube" }}</span></p>
+                        <p>Category: {{ group.skill|capfirst }}</p>
+                    </div>
+                    <a href="{{ c.url|default:'https://www.youtube.com/results?search_query='|add:group.skill }}" target="_blank">
+                        <button class="start-button">Start</button>
+                    </a>
+                </div>
+                {% endfor %}
+            {% else %}
+                <!-- YouTube fallback -->
+                <div class="course-card">
+                    <div>
+                        <h4>
+                          <a href="https://www.youtube.com/results?search_query={{ group.skill|urlencode }}" target="_blank">
+                            Explore {{ group.skill|capfirst }} Courses
+                          </a>
+                        </h4>
+                        <p>Provider: YouTube</p>
+                        <p>Category: {{ group.skill|capfirst }}</p>
+                    </div>
+                    <a href="https://www.youtube.com/results?search_query={{ group.skill|urlencode }}" target="_blank">
+                        <button class="start-button">Start</button>
+                    </a>
+                </div>
+            {% endif %}
+        {% empty %}
+            <p class="text-muted fst-italic">No recommendations available.</p>
+        {% endfor %}
+    </div>
+
+</div>
+
+</body>
+</html>

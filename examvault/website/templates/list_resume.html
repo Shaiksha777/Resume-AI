@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uploaded Resumes</title>
+    <style>
+        /* Basic Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(90deg,#000000, #381100);
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 0 20px;
+            
+        }
+
+        nav {
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .logo h1 {
+            background: linear-gradient(45deg, #e26666, #744e9d, #d24e60, #88169759);
+            background-size: 600% 600%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 3rem;
+            animation: gradientBG 5s ease infinite;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 0%; }
+            50% { background-position: 100% 100%; }
+            100% { background-position: 0% 0%; }
+        }
+
+        .container {
+            margin-top: 10px;
+            flex-grow: 1;
+            text-align: center;
+            background: #1e1e1e; 
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            width: 90%; /* Responsive width */
+            max-width: 500px; /* Max width for larger screens */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between; /* Ensures space between list and button */
+            min-height: 400px; /* Optional: Define a minimum height */
+            margin-bottom: 40px; /* Added space between container and bottom of screen */
+        }
+
+        h1 {
+            color: gray;
+            margin-bottom: 20px;
+            font-size: 2rem;
+        }
+
+        h1 b {
+            color: #744e9d;
+        }
+
+        /* Scrollable resume list */
+        .resume-list {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 20px;
+            flex-grow: 1; /* Allows the list to take up available space */
+            overflow-y: auto; /* Scroll within the container */
+            max-height: 300px; /* Set a maximum height for the scrollable area */
+        }
+
+        .resume-list li {
+            background: #333;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            position: relative;
+            transition: border 0.1s ease;/* Smooth transition for border and box-shadow */
+        }
+
+        /* Subtle glowing border effect */
+        .resume-list li:hover {
+            border: 2px solid rgba(116, 78, 157, 0.8); /* Thin border with theme color */
+            box-shadow: 0 0 15px rgba(116, 78, 157, 0.6); /* Soft glow with smoother effect */
+        }
+
+        /* No hover effect on content inside the list item */
+        .resume-name, .download-btn {
+            pointer-events: none; /* Prevent inner elements from triggering extra hover */
+        }
+
+        .resume-name {
+            font-size: 1.2rem;
+            color: white;
+            font-weight: bold;
+        }
+
+        .download-btn {
+            background-color: #744e9d;
+            color: #333;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 1rem;
+            transition: background-color 0.3s ease, transform 0.3s ease; /* Smooth button transition */
+            pointer-events: auto; /* Allow the button to remain clickable */
+        }
+
+        .download-btn:hover {
+            background-color: #ff6347;
+            transform: scale(1.05);
+        }
+
+        .upload-link {
+            text-decoration: none;
+            color: #744e9d;
+            padding: 10px 15px;
+            font-weight: bold;
+            border-radius: 5px;
+            background-color: #333;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            margin-top: auto; /* Push the upload link to the bottom */
+            align-self: center; /* Centers the button horizontally */
+        }
+
+        .upload-link:hover {
+            color: #ff6347;
+        }
+
+        /* Hiding scrollbar for WebKit browsers (Chrome, Safari) */
+        .resume-list::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Hiding scrollbar for Firefox and other browsers */
+        .resume-list {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="logo">
+            <br>
+            <br>
+            <h1>ExamVault</h1>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1>Uploaded <b>Resumes</b></h1>
+        <ul class="resume-list">
+            {% for resume in resumes %}
+                <li>
+                    <span class="resume-name">{{ resume.name }}</span>
+                    <a href="{% url 'download_resume' resume.id %}" class="download-btn">Download</a>
+                </li>
+            {% endfor %}
+        </ul>
+        <a href="{% url 'upload_resume' %}" class="upload-link">Upload New Resume</a>
+    </div>
+
+</body>
+</html>

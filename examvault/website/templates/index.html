@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rocket Launch with Space Background</title>
+    <!-- Link to the external CSS file -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Parallax Background -->
+    <div class="parallax-background"></div>
+    
+    <div id="landing-page" class="landing hide">
+        <h1 style="color: aliceblue;text-align: center;">Hiii</h1><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+    </div>
+    
+    <div id="frame">
+        <div class="rocket">
+            <div class="rocket__body">
+                <div class="rocket__body__window">
+                    <div class="shadow"></div>
+                </div>
+                <div class="rocket__body__inner">
+                    <div class="shadow"></div>
+                </div>
+            </div>
+            <div class="rocket__wing rocket__wing--left"></div>
+            <div class="rocket__wing rocket__wing--right">
+                <div class="shadow shadow--full"></div>
+            </div>
+            <div class="rocket__label">
+                <p class="labels">3</p>
+                <p class="labels">2</p>
+                <p class="labels">1</p>
+            </div>
+            <div class="rocket__smoke rocket__smoke--left">
+                <div class="rocket__smoke__inner">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+            </div>
+            <div class="rocket__smoke rocket__smoke--right">
+                <div class="rocket__smoke__inner">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+            </div>
+            <div class="rocket__fire"></div>
+        </div>
+    </div>
+
+    <!-- Include GSAP library from CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.0/gsap.min.js"></script>
+    <!-- Link to the external JavaScript file -->
+    <script src="script.js"></script>
+</body>
+</html>

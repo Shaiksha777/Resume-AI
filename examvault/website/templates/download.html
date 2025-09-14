@@ -1,0 +1,359 @@
+{% if user.is_authenticated %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download Papers</title>
+    <style>
+        /* Overall Body Styling */
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(90deg,#000000,#462d17);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            height: 100vh;
+            margin: 0;
+            padding: 20px;
+            color: #fff;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        h2, h3 {
+            color: #3f3f3f;
+            font-weight: 700;
+            margin-bottom: 10px;
+            position: relative;
+            font-size: 2rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            animation: slideIn 1s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        h2::after, h3::after {
+            content: '';
+            display: block;
+            width: 80px;
+            height: 3px;
+            background-color: #007BFF;
+            margin: 10px auto;
+            transition: width 0.4s ease;
+        }
+
+        h2:hover::after, h3:hover::after {
+            width: 120px;
+        }
+
+        /* Button Group Layout */
+        .button-group {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 30px 0;
+        }
+
+        /* Department and Course Buttons */
+        .button-group button, 
+        #course-container button, 
+        #paper-container button {
+            padding: 15px 30px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 50px;
+            margin: 10px;
+            transition: all 0.4s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .button-group button::before,
+        #course-container button::before,
+        #paper-container button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.2);
+            transition: all 0.5s;
+            z-index: 0;
+        }
+
+        .button-group button:hover::before,
+        #course-container button:hover::before,
+        #paper-container button:hover::before {
+            left: 100%;
+        }
+
+        .button-group button:hover, 
+        #course-container button:hover, 
+        #paper-container button:hover {
+            background-color: #0056b3;
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Container Styling */
+        #course-container, #paper-container {
+            width: 80%;
+            max-width: 600px;
+            margin: 20px 0;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent background for better readability */
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.4s ease-in-out;
+            z-index: 1;
+        }
+
+        #course-container.show, #paper-container.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            .button-group {
+                flex-direction: column;
+            }
+
+            .button-group button {
+                width: 80%;
+                margin-left: auto;
+                margin-right: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<h2>Select Department</h2>
+
+<div class="button-group">
+    <button onclick="loadCourses('AIE')">AIE</button>
+    <button onclick="loadCourses('CSE')">CSE</button>
+    <button onclick="loadCourses('EEE')">EEE</button>
+    <button onclick="loadCourses('CYS')">CYS</button>
+</div>
+
+<div id="course-container"></div>
+<div id="paper-container"></div>
+
+<script>
+    // Function to load courses for a department
+    function loadCourses(department) {
+        document.getElementById('course-container').innerHTML = '';
+        document.getElementById('paper-container').innerHTML = '';
+        document.getElementById('course-container').classList.remove('show');
+        document.getElementById('paper-container').classList.remove('show');
+        
+        fetch(`/get_courses/${department}`)
+            .then(response => response.json())
+            .then(courses => {
+                let courseContainer = document.getElementById('course-container');
+                let html = '<h3>Select Course</h3>';
+                courses.forEach(course => {
+                    html += `<button onclick="loadPapers('${department}', '${course}')">${course}</button>`;
+                });
+                courseContainer.innerHTML = html;
+                setTimeout(() => {
+                    courseContainer.classList.add('show'); // Add animation
+                }, 100);
+            });
+    }
+
+    // Function to load papers for a course
+    function loadPapers(department, course) {
+        document.getElementById('paper-container').innerHTML = '';
+        document.getElementById('paper-container').classList.remove('show');
+        
+        fetch(`/get_papers/${department}/${course}`)
+            .then(response => response.json())
+            .then(papers => {
+                let paperContainer = document.getElementById('paper-container');
+                let html = '<h3>Select Paper</h3>';
+                papers.forEach(paper => {
+                    html += `<button onclick="downloadPaper(${paper.id})">${paper.subject} - ${paper.year} (Semester ${paper.semester})</button>`;
+                });
+                paperContainer.innerHTML = html;
+                setTimeout(() => {
+                    paperContainer.classList.add('show'); // Add animation
+                }, 100);
+            });
+    }
+
+    // Function to download paper
+    function downloadPaper(paperId) {
+        window.location.href = `/download_paper/${paperId}`;
+    }
+</script>
+
+</body>
+</html>
+
+{% else %}
+<p id="redirect-message">Please log in to continue. Redirecting...</p>
+
+<!-- Add styles for the new circle loading spinner -->
+<style>
+    html {
+        height: 100%;
+    }
+
+    body {
+        background: linear-gradient(90deg, #000000, #391707);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        overflow: hidden;
+        text-align: center;
+        font-family: 'Arial', sans-serif;
+    }
+
+    .gradient-heading {
+        position: relative;
+        font-size: 3rem;
+        color: transparent;
+        background: linear-gradient(270deg, #6c63ff, #ff7e67, #6c63ff);
+        background-size: 300% 300%;
+        -webkit-background-clip: text;
+        background-clip: text;
+        animation: gradientAnimation 6s ease infinite;
+        z-index: 3; /* Ensure this is on top */
+        margin-bottom: 20px; /* Space between heading and loader */
+    }
+
+    @keyframes gradientAnimation {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+
+    .loader {
+        position: relative;
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        perspective: 800px;
+        margin-bottom: 20px; /* Space between spinner and text */
+        z-index: 2; /* Below the heading */
+    }
+
+    .inner {
+        position: absolute;
+        box-sizing: border-box;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+    }
+
+    .inner.one {
+        left: 0%;
+        top: 0%;
+        animation: rotate-one 1s linear infinite;
+        border-bottom: 3px solid #efeffa;
+    }
+
+    .inner.two {
+        right: 0%;
+        top: 0%;
+        animation: rotate-two 1s linear infinite;
+        border-right: 3px solid #efeffa;
+    }
+
+    .inner.three {
+        right: 0%;
+        bottom: 0%;
+        animation: rotate-three 1s linear infinite;
+        border-top: 3px solid #efeffa;
+    }
+
+    @keyframes rotate-one {
+        0% {
+            transform: rotateX(35deg) rotateY(-45deg) rotateZ(0deg);
+        }
+        100% {
+            transform: rotateX(35deg) rotateY(-45deg) rotateZ(360deg);
+        }
+    }
+
+    @keyframes rotate-two {
+        0% {
+            transform: rotateX(50deg) rotateY(10deg) rotateZ(0deg);
+        }
+        100% {
+            transform: rotateX(50deg) rotateY(10deg) rotateZ(360deg);
+        }
+    }
+
+    @keyframes rotate-three {
+        0% {
+            transform: rotateX(35deg) rotateY(55deg) rotateZ(0deg);
+        }
+        100% {
+            transform: rotateX(35deg) rotateY(55deg) rotateZ(360deg);
+        }
+    }
+
+    #redirect-message {
+        font-size: 1.4em;
+        font-weight: 500;
+        padding: 15px 30px;
+        border-radius: 20px;
+        background: #ffffff; /* White background for the message box */
+        color: #333333; /* Darker text color for readability */
+        text-align: center;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        max-width: 80%;
+        font-family: 'Arial', sans-serif;
+        z-index: 1; /* Below the heading */
+    }
+</style>
+<div class="loader">
+    <div class="inner one"></div>
+    <div class="inner two"></div>
+    <div class="inner three"></div>
+</div>
+
+<script>
+    // Delay before redirecting to login page
+    function redirectToLogin() {
+        window.location.href = "{% url 'login_user' %}";
+    }
+
+    // Trigger redirect after 3 seconds
+    setTimeout(redirectToLogin, 3000);
+</script>
+{% endif %}

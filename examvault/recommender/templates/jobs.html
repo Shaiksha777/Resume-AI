@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Job Recommendations</title>
+  <style>
+    :root {
+      --text-color-dark: #111827;
+      --text-color-light: #374151;
+      --blue-primary: #2563eb;
+      --blue-light: #eff6ff;
+      --green-primary: #10b981;
+      --green-light: #ecfdf5;
+      --gray-bg: #f9fafb;
+      --gray-border: #d1d5db;
+      --shadow-light: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+      --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.03);
+      --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, Roboto, "Segoe UI", Arial, sans-serif;
+      margin: 0;
+      background-color: var(--gray-bg);
+      color: var(--text-color-dark);
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* Navbar */
+    nav {
+      width: 100%;
+      background-color: #fff;
+      padding: 15px 40px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: var(--blue-primary);
+      font-weight: bold;
+      margin-right: 20px;
+      transition: color 0.2s ease;
+    }
+
+    nav a:hover {
+      color: var(--green-primary);
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1400px;
+      margin: 20px auto;
+      padding: 20px 40px;
+      box-sizing: border-box;
+    }
+
+    .page-header {
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: var(--shadow-light);
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .section-title {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--text-color-dark);
+      margin-bottom: 10px;
+      position: relative;
+      display: inline-block;
+    }
+
+    .section-title::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      bottom: -5px;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 3px;
+      background-color: var(--blue-primary);
+      border-radius: 2px;
+    }
+
+    .role-highlight {
+      color: var(--blue-primary);
+      font-weight: 600;
+    }
+
+    .subtitle {
+      color: var(--text-color-light);
+      font-size: 1.1rem;
+      margin-top: 10px;
+    }
+
+    /* Job Grid */
+    .jobs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 25px;
+      margin-top: 30px;
+    }
+
+    .job-card {
+      background-color: #fff;
+      border: 1px solid var(--gray-border);
+      border-radius: 12px;
+      box-shadow: var(--shadow-light);
+      padding: 25px;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .job-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, var(--blue-primary), var(--green-primary));
+      transform: scaleX(0);
+      transition: transform 0.3s ease;
+    }
+
+    .job-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--blue-primary);
+    }
+
+    .job-card:hover::before {
+      transform: scaleX(1);
+    }
+
+    .job-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .job-logo {
+      width: 60px;
+      height: 60px;
+      object-fit: contain;
+      margin-right: 15px;
+      border-radius: 8px;
+      background: var(--gray-bg);
+      padding: 8px;
+    }
+
+    .job-placeholder {
+      width: 60px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      background: linear-gradient(135deg, var(--blue-light), var(--green-light));
+      border-radius: 8px;
+      margin-right: 15px;
+    }
+
+    .job-info h3 {
+      margin: 0 0 5px 0;
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: var(--text-color-dark);
+      line-height: 1.3;
+    }
+
+    .job-company {
+      color: var(--text-color-light);
+      font-size: 1rem;
+      font-weight: 500;
+      margin: 0;
+    }
+
+    .job-details {
+      flex-grow: 1;
+      margin-bottom: 20px;
+    }
+
+    .match-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 16px;
+      border-radius: 50px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 15px;
+      background: var(--green-light);
+      color: var(--green-primary);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+
+    .match-badge::before {
+      content: '✨';
+      margin-right: 6px;
+    }
+
+    .apply-button {
+      background: linear-gradient(135deg, var(--blue-primary),var(--blue-primary));
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      text-align: center;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .apply-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+      text-decoration: none;
+      color: #fff;
+    }
+
+    .apply-button::after {
+      content: '→';
+      transition: transform 0.3s ease;
+    }
+
+    .apply-button:hover::after {
+      transform: translateX(3px);
+    }
+
+    .back-button {
+      background-color: #fff;
+      color: var(--text-color-dark);
+      border: 2px solid var(--gray-border);
+      border-radius: 8px;
+      padding: 12px 24px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 30px;
+      transition: all 0.3s ease;
+    }
+
+    .back-button:hover {
+      background-color: var(--gray-bg);
+      border-color: var(--blue-primary);
+      color: var(--blue-primary);
+      text-decoration: none;
+    }
+
+    .no-results {
+      text-align: center;
+      padding: 60px 20px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: var(--shadow-light);
+    }
+
+    .no-results-icon {
+      font-size: 4rem;
+      margin-bottom: 20px;
+      opacity: 0.5;
+    }
+
+    .no-results p {
+      color: var(--text-color-light);
+      font-size: 1.1rem;
+      margin: 0;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+      .jobs-grid {
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      }
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px;
+      }
+
+      nav {
+        padding: 15px 20px;
+      }
+
+      .jobs-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+
+      .job-card {
+        padding: 20px;
+      }
+
+      .section-title {
+        font-size: 1.6rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .job-header {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .job-logo,
+      .job-placeholder {
+        margin-right: 0;
+        margin-bottom: 15px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav>
+    <div>
+      <a href="/">Home</a>
+      <a href="#">Job Recommendations</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="section-title">Job Opportunities</div>
+      <p class="subtitle">
+        Curated job listings for <span class="role-highlight">{{ role }}</span> •
+        Ranked by skill compatibility
+      </p>
+    </div>
+
+    <!-- Jobs Grid -->
+    {% if ranked_jobs %}
+    <div class="jobs-grid">
+      {% for job in ranked_jobs %}
+      <div class="job-card">
+        <div class="job-header">
+          {% if job.logo %}
+          <img src="{{ job.logo }}" class="job-logo" alt="{{ job.company }} Logo">
+          {% else %}
+          <div class="job-placeholder">
+            🏢
+          </div>
+          {% endif %}
+          <div class="job-info">
+            <h3>{{ job.title }}</h3>
+            <p class="job-company">{{ job.company|default:"Company" }}</p>
+          </div>
+        </div>
+
+        <div class="job-details">
+          <div class="match-badge">
+            Match: {{ job.similarity }}
+          </div>
+        </div>
+
+        <a href="{{ job.apply_link }}" target="_blank" class="apply-button">
+          Apply Now
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="no-results">
+      <div class="no-results-icon">🔍</div>
+      <p>No job opportunities found for <strong>{{ role }}</strong> at the moment.</p>
+      <p style="margin-top: 10px; font-size: 0.95rem;">Try checking back later or explore other roles.</p>
+    </div>
+    {% endif %}
+
+    <a href="/" class="back-button">
+      ← Back to Home
+    </a>
+  </div>
+
+</body>
+
+</html>

@@ -1,0 +1,245 @@
+:root {
+    --color: #050509;
+    --font-color: #f1c40f;
+    --rocket-main: white;
+    --rocket-highlight: #e74c3c;
+    --rocket-glass: #9AECDB;
+    --rocket-smoke: #f1f2f6;
+    --rocket-fire: #f0932b;
+    --rocket-fire-highlight: #f1c40f;
+  }
+  
+  html, body {
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--color);
+  }
+  
+  #frame {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition: opacity 1s ease-in-out, visibility 1s ease-in-out;
+  }
+  
+  #frame.hidden {
+    opacity: 0;
+    visibility: hidden;
+  }
+  .shadow {
+    position: absolute;
+    width: 50%;
+    height: 100%;
+    right: 0;
+    background: rgba(100, 100, 100, 0.1);
+    z-index: 1;
+  }
+  
+  .shadow--full {
+    width: 100%;
+  }
+  
+  .rocket {
+    position: relative;
+    width: 55px;
+    height: 100px;
+    transition: opacity 1s ease-in-out;
+  }
+  .rocket.hidden {
+    opacity: 0;
+  }
+  .rocket__body {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 10;
+  }
+  .rocket__body__window {
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    top: 30px;
+    left: 13.5px;
+    border-radius: 50%;
+    background: var(--rocket-glass);
+    z-index: 1;
+    border: 3px solid var(--rocket-highlight);
+  }
+  .rocket__body__inner {
+    position: relative;
+    width: 55px;
+    height: 125px;
+    border-radius: 80%;
+    background: var(--rocket-main);
+    overflow: hidden;
+  }
+  .rocket__body__inner:before, .rocket__body__inner:after {
+    content: "";
+    position: absolute;
+    background: var(--rocket-highlight);
+    border-radius: 50%;
+  }
+  .rocket__body__inner:before {
+    width: 100%;
+    height: 50px;
+    top: -30px;
+  }
+  .rocket__body__inner:after {
+    width: 100%;
+    height: 10px;
+    bottom: 22.5px;
+  }
+  .rocket__wing {
+    position: absolute;
+    background: var(--rocket-highlight);
+    bottom: 0px;
+    z-index: 5;
+  }
+  .rocket__wing--left {
+    left: -29px;
+    width: 44px;
+    height: 20px;
+    border-radius: 100% 0 0 0;
+    transform: rotate(-50deg);
+  }
+  .rocket__wing--right {
+    right: -29px;
+    width: 44px;
+    height: 20px;
+    border-radius: 0 100% 0 0;
+    transform: rotate(50deg);
+  }
+  .rocket__label {
+    width: 250px;
+    position: absolute;
+    top: -80px;
+    left: -80px;
+  }
+  .rocket__label p {
+    position: absolute;
+    top: 0;
+    left: 0;
+    font-family: "Bowlby One SC", cursive;
+    font-size: 80px;
+    line-height: 80px;
+    margin: 0;
+    text-transform: uppercase;
+    color: var(--font-color);
+    transform: rotate(-25deg);
+  }
+  .rocket__smoke {
+    position: absolute;
+    width: 50px;
+    height: 10px;
+    bottom: 5px;
+    opacity: 0;
+    z-index: 15;
+  }
+  .rocket__smoke__inner {
+    position: relative;
+    margin: 30px 0 0 0;
+    width: 100%;
+    height: 100%;
+    background: var(--rocket-smoke);
+  }
+  .rocket__smoke__inner div {
+    position: absolute;
+    border-radius: 50%;
+    width: 12px;
+    height: 12px;
+    left: -5px;
+    bottom: 0;
+    box-shadow: inset -2px -3px 0 0 var(--rocket-smoke);
+    background: #fff;
+    z-index: 10;
+  }
+  .rocket__smoke__inner div:nth-child(1) {
+    transform: scale(1.5);
+    left: 10%;
+    bottom: 30%;
+    z-index: 9;
+  }
+  .rocket__smoke__inner div:nth-child(2) {
+    transform: scale(2.5);
+    left: 50%;
+    bottom: 90%;
+    z-index: 8;
+  }
+  .rocket__smoke__inner div:nth-child(3) {
+    transform: scale(1.1);
+    left: 84%;
+    bottom: 4.5%;
+    z-index: 7;
+  }
+  .rocket__smoke--right {
+    right: -50px;
+  }
+  .rocket__smoke--left {
+    left: -50px;
+    transform: rotateY(180deg);
+  }
+  .rocket__fire {
+    position: absolute;
+    width: 13.75px;
+    height: 13.75px;
+    bottom: -15.75px;
+    left: 20.75px;
+    background: var(--rocket-fire);
+    border-radius: 80% 0 55% 50%/55% 0 80% 50%;
+    margin-top: 20px;
+    transform: rotate(135deg);
+  }
+  .rocket__fire:after {
+    content: "";
+    position: absolute;
+    top: 3px;
+    left: 1px;
+    width: 10.3125px;
+    height: 10.3125px;
+    background: var(--rocket-fire-highlight);
+    border-radius: 80% 0 55% 50%/55% 0 80% 50%;
+  }
+
+  
+.landing{
+    background-image: url('image_space.png');
+    background-size: cover;
+
+}
+.hide{
+    display: none;
+}
+
+.hidden {
+    display: none;
+}
+.landing {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('image_space.png');
+    background-size: cover;
+    background-position: center;
+    z-index: 10; /* Make sure it's above other content */
+}
+
+/* Parallax background styling */
+.parallax-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('image_space.png');
+    background-size: cover;
+    background-attachment: fixed;
+    z-index: -1; /* Place behind other content */
+  }

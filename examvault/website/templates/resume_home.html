@@ -1,0 +1,281 @@
+{% if user.is_authenticated %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ExamVault - Resumes</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <style>
+        /* Basic Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(90deg,#000000, #381100);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            justify-content: center;
+            align-items: center;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+        }
+
+        .logo h1 {
+            background: linear-gradient(45deg, #e26666, #744e9d, #d24e60, #88169759);
+            background-size: 600% 600%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 3rem;
+            font-weight: bold;
+            animation: gradientBG 5s ease infinite;
+        }
+
+        @keyframes gradientBG {
+            0% {
+                background-position: 0% 0%;
+            }
+            50% {
+                background-position: 100% 100%;
+            }
+            100% {
+                background-position: 0% 0%;
+            }
+        }
+
+        .nav-links {
+            list-style: none;
+            display: flex;
+        }
+
+        .nav-links li {
+            margin-left: 20px;
+        }
+
+        .nav-links li a {
+            text-decoration: none;
+            color: white;
+            font-size: 1rem;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links li a:hover,
+        .nav-links li a.active {
+            color: #ff6347;
+        }
+
+        /* Main Content */
+        .container {
+            text-align: center;
+            margin-top: 20px;
+            flex-grow: 1;
+        }
+
+        h1 {
+            color: gray;
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        h1 b {
+            color: #744e9d;
+        }
+
+        a {
+            text-decoration: none;
+            color: white;
+            display: inline-block;
+            padding: 15px 30px;
+            background-color: #744e9d;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        a:hover {
+            background-color: #ff6347;
+            transform: scale(1.05);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Footer */
+        footer {
+            width: 100%;
+            padding: 20px 0;
+            background-color: #333;
+            text-align: center;
+            color: white;
+            font-size: 0.9rem;
+        }
+
+
+        @keyframes wave {
+            0% {
+                background-position: 0%;
+            }
+            50% {
+                background-position: 100%;
+            }
+            100% {
+                background-position: 0%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="logo">
+            <br>
+            <br>
+            <h1>ExamVault</h1>
+        </div>
+    </nav>
+    <br>
+    <br>
+    <br>
+    <br>
+
+    <div class="container">
+        <br><br>
+        <h1 style="color: gray; font-size: 3rem;">Welcome to <b style="color: #744e9d;">"ExamVault Resumes"</b></h1>
+        <br>
+        <a href="{% url 'upload_resume' %}">Upload Resume</a><br><br>
+        <a href="{% url 'list_resumes' %}">View Resumes</a>
+    </div>
+   
+
+    <hr class="styled-hr">
+
+
+
+</body>
+</html>
+
+{% else %}
+<p id="redirect-message">Please log in to continue. Redirecting...</p>
+
+<!-- Add styles for the new circle loading spinner -->
+<style>
+    html {
+        height: 100%;
+    }
+
+    body {
+        background: linear-gradient(90deg,#000000,#391707);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        overflow: hidden;
+        text-align: center;
+        font-family: 'Arial', sans-serif;
+    }
+
+    .loader {
+        position: relative;
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        perspective: 800px;
+        margin-bottom: 20px; /* Space between spinner and text */
+    }
+
+    .inner {
+        position: absolute;
+        box-sizing: border-box;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+    }
+
+    .inner.one {
+        left: 0%;
+        top: 0%;
+        animation: rotate-one 1s linear infinite;
+        border-bottom: 3px solid #efeffa;
+    }
+
+    .inner.two {
+        right: 0%;
+        top: 0%;
+        animation: rotate-two 1s linear infinite;
+        border-right: 3px solid #efeffa;
+    }
+
+    .inner.three {
+        right: 0%;
+        bottom: 0%;
+        animation: rotate-three 1s linear infinite;
+        border-top: 3px solid #efeffa;
+    }
+
+    @keyframes rotate-one {
+        0% {
+            transform: rotateX(35deg) rotateY(-45deg) rotateZ(0deg);
+        }
+        100% {
+            transform: rotateX(35deg) rotateY(-45deg) rotateZ(360deg);
+        }
+    }
+
+    @keyframes rotate-two {
+        0% {
+            transform: rotateX(50deg) rotateY(10deg) rotateZ(0deg);
+        }
+        100% {
+            transform: rotateX(50deg) rotateY(10deg) rotateZ(360deg);
+        }
+    }
+
+    @keyframes rotate-three {
+        0% {
+            transform: rotateX(35deg) rotateY(55deg) rotateZ(0deg);
+        }
+        100% {
+            transform: rotateX(35deg) rotateY(55deg) rotateZ(360deg);
+        }
+    }
+
+    #redirect-message {
+        font-size: 1.4em;
+        font-weight: 500;
+        padding: 15px 30px;
+        border-radius: 20px;
+        background: #ffffff; /* White background for the message box */
+        color: #333333; /* Darker text color for readability */
+        text-align: center;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        max-width: 80%;
+        font-family: 'Arial', sans-serif;
+    }
+</style>
+
+<div class="loader">
+    <div class="inner one"></div>
+    <div class="inner two"></div>
+    <div class="inner three"></div>
+</div>
+
+<script>
+    // Delay before redirecting to login page
+    function redirectToLogin() {
+        window.location.href = "{% url 'login_user' %}";
+    }
+
+    // Trigger redirect after 3 seconds
+    setTimeout(redirectToLogin, 1000);
+</script>
+
+{% endif %}

@@ -1,0 +1,312 @@
+{% if user.is_authenticated %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Paper</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(90deg, #994c28, #000000);
+            overflow: hidden;
+            border-radius: 20px;
+        }
+
+        .container {
+            display: flex;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .left {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            background: linear-gradient(90deg, #000000, #4a2d20);
+            padding: 40px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 2rem;
+            text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1);
+            animation: textFadeIn 0.8s ease forwards;
+            opacity: 0;
+            animation-delay: 0.2s;
+        }
+
+        @keyframes textFadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .gradient-heading {
+            position: relative;
+            font-size: 3rem;
+            color: transparent;
+            background: linear-gradient(270deg, #6c63ff, #ff7e67, #6c63ff);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            animation: gradientAnimation 6s ease infinite;
+        }
+
+        @keyframes gradientAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            max-width: 400px;
+            position: relative;
+            z-index: 1;
+        }
+
+        input, select {
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            border: 2px solid #ddd;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            outline: none;
+            background-color: #f8faff;
+        }
+
+        input:focus, select:focus {
+            border-color: #6c63ff;
+            box-shadow: 0 0 10px rgba(108, 99, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .btn {
+            background-color: #6c63ff;
+            border: none;
+            color: white;
+            padding: 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            opacity: 0;
+            transform: translateY(10px);
+            animation: buttonFadeIn 0.8s forwards;
+            animation-delay: 0.4s;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        @keyframes buttonFadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .btn:hover {
+            background-color: #5946d2;
+            transform: scale(1.05) translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .signup-text {
+            margin-top: 20px;
+            text-align: center;
+            color: #888;
+        }
+
+        .signup-text a {
+            color: #6c63ff;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .signup-text a:hover {
+            color: #5946d2;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .right {
+                display: none;
+            }
+
+            .left {
+                width: 100%;
+                height: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="left">
+            <div class="heading">
+                <h1 class="gradient-heading">ExamVault</h1>
+            </div>
+            <h2><b style="color: gray;">Upload Paper to</b> <b style="color: #6c63ff;">ExamVault</b></h2>
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="text" name="subject" placeholder="Subject" required>
+                <input type="text" name="course" placeholder="Course" required>
+                <input type="text" name="semester" placeholder="Semester" required>
+                <input type="text" name="year" placeholder="Year of Study" required>
+                <input type="text" name="department" placeholder="Department" required>
+                <input type="text" name="uploaded_by" placeholder="Uploaded by (Your Name)" required>
+                <input type="file" name="file" accept=".pdf" required>
+                <button type="submit" class="btn">Upload Paper</button>
+            </form>
+                        <div class="signup-text">
+                <p>Go back to <a href="{% url 'home' %}">Home</a></p>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</body>
+</html>
+
+
+{% else %}
+<p id="redirect-message">Please log in to continue. Redirecting...</p>
+
+<!-- Add styles for the new circle loading spinner -->
+<style>
+    html {
+        height: 100%;
+    }
+
+    body {
+        background: linear-gradient(90deg,#000000,#391707);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        overflow: hidden;
+        text-align: center;
+        font-family: 'Arial', sans-serif;
+    }
+
+    .loader {
+        position: relative;
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        perspective: 800px;
+        margin-bottom: 20px; /* Space between spinner and text */
+    }
+
+    .inner {
+        position: absolute;
+        box-sizing: border-box;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+    }
+
+    .inner.one {
+        left: 0%;
+        top: 0%;
+        animation: rotate-one 1s linear infinite;
+        border-bottom: 3px solid #efeffa;
+    }
+
+    .inner.two {
+        right: 0%;
+        top: 0%;
+        animation: rotate-two 1s linear infinite;
+        border-right: 3px solid #efeffa;
+    }
+
+    .inner.three {
+        right: 0%;
+        bottom: 0%;
+        animation: rotate-three 1s linear infinite;
+        border-top: 3px solid #efeffa;
+    }
+
+    @keyframes rotate-one {
+        0% {
+            transform: rotateX(35deg) rotateY(-45deg) rotateZ(0deg);
+        }
+        100% {
+            transform: rotateX(35deg) rotateY(-45deg) rotateZ(360deg);
+        }
+    }
+
+    @keyframes rotate-two {
+        0% {
+            transform: rotateX(50deg) rotateY(10deg) rotateZ(0deg);
+        }
+        100% {
+            transform: rotateX(50deg) rotateY(10deg) rotateZ(360deg);
+        }
+    }
+
+    @keyframes rotate-three {
+        0% {
+            transform: rotateX(35deg) rotateY(55deg) rotateZ(0deg);
+        }
+        100% {
+            transform: rotateX(35deg) rotateY(55deg) rotateZ(360deg);
+        }
+    }
+
+    #redirect-message {
+        font-size: 1.4em;
+        font-weight: 500;
+        padding: 15px 30px;
+        border-radius: 20px;
+        background: #ffffff; /* White background for the message box */
+        color: #333333; /* Darker text color for readability */
+        text-align: center;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        max-width: 80%;
+        font-family: 'Arial', sans-serif;
+    }
+</style>
+
+<div class="loader">
+    <div class="inner one"></div>
+    <div class="inner two"></div>
+    <div class="inner three"></div>
+</div>
+
+<script>
+    // Delay before redirecting to login page
+    function redirectToLogin() {
+        window.location.href = "{% url 'login_user' %}";
+    }
+
+    // Trigger redirect after 3 seconds
+    setTimeout(redirectToLogin, 1000);
+</script>
+
+{% endif %}
