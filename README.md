@@ -166,7 +166,7 @@ Please open an issue to discuss your ideas or report bugs.
 
 ## 📄 License
 
-[MIT License](LICENSE) (add your license file if needed)
+[MIT License](LICENSE) 
 
 ---
 
