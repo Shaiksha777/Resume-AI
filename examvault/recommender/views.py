@@ -22,7 +22,7 @@ from .skill_bank import SKILL_BANK
 # Load model once
 model = SentenceTransformer('all-MiniLM-L6-v2')
 COURSES_PER_SKILL = 6
-API_KEY = "ea803f1871b8d4abfaf9ce7afcda7a3cdda175cef188a19713259fd66fad5d34"
+API_KEY = ""
 
 
 
@@ -51,6 +51,172 @@ def extract_skills_from_resume_semantic(resume_text, top_k=3, threshold=0.35):
             if score >= threshold:
                 found_skills.add(ALL_SKILLS[idx[0][i]])
     return list(found_skills)
+
+def fetch_courses_batch_serpapi(skills, max_results_per_skill=2):
+    """Fetch courses for multiple skills using optimized SerpAPI searches"""
+    all_courses = {}
+    
+    try:
+        # Split skills into batches for efficient searching
+        # We'll do 2 searches maximum: one for first half, one for second half
+        skill_batches = []
+        batch_size = max(1, len(skills) // 2) if len(skills) > 2 else len(skills)
+        
+        for i in range(0, len(skills), batch_size):
+            skill_batches.append(skills[i:i + batch_size])
+        
+        for batch in skill_batches[:2]:  # Maximum 2 API calls
+            # Create a combined search query for multiple skills
+            search_terms = " OR ".join([f'"{skill} course"' for skill in batch])
+            search_query = f"({search_terms}) online tutorial udemy coursera edx"
+            
+            params = {
+                "engine": "google",
+                "q": search_query,
+                "hl": "en",
+                "gl": "us",
+                "api_key": API_KEY,
+                "num": len(batch) * max_results_per_skill * 3  # Get more results to distribute among skills
+            }
+            
+            search = GoogleSearch(params)
+            results = search.get_dict()
+            organic_results = results.get("organic_results", [])
+            
+            # Initialize course lists for each skill in this batch
+            for skill in batch:
+                if skill not in all_courses:
+                    all_courses[skill] = []
+            
+            # Distribute results among skills
+            course_keywords = ["course", "tutorial", "learn", "training", "class", "bootcamp", "certification"]
+            
+            for result in organic_results:
+                title = result.get("title", "").lower()
+                link = result.get("link", "")
+                snippet = result.get("snippet", "").lower()
+                
+                # Check if this result is course-related
+                if any(keyword in title or keyword in snippet for keyword in course_keywords):
+                    # Find which skill this result matches best
+                    for skill in batch:
+                        if (skill.lower() in title or skill.lower() in snippet) and len(all_courses[skill]) < max_results_per_skill:
+                            # Determine platform from URL
+                            platform = "Online"
+                            if "udemy.com" in link:
+                                platform = "Udemy"
+                            elif "coursera.org" in link:
+                                platform = "Coursera"
+                            elif "edx.org" in link:
+                                platform = "edX"
+                            elif "youtube.com" in link:
+                                platform = "YouTube"
+                            elif "pluralsight.com" in link:
+                                platform = "Pluralsight"
+                            elif "linkedin.com/learning" in link:
+                                platform = "LinkedIn Learning"
+                            
+                            all_courses[skill].append({
+                                "title": result.get("title", ""),
+                                "platform": platform,
+                                "url": link,
+                                "description": result.get("snippet", ""),
+                                "name": result.get("title", "")
+                            })
+                            break
+        
+        # Fill any missing courses with fallback searches or static data
+        for skill in skills:
+            if skill not in all_courses or len(all_courses[skill]) == 0:
+                all_courses[skill] = fetch_courses_from_static_db(skill, max_results_per_skill)
+        
+        return all_courses
+        
+    except Exception as e:
+        print(f"Error in batch course search: {e}")
+        # Fallback to individual static searches
+        fallback_courses = {}
+        for skill in skills:
+            fallback_courses[skill] = fetch_courses_from_static_db(skill, max_results_per_skill)
+        return fallback_courses
+
+def fetch_courses_from_serpapi(skill, max_results=2):
+    """Fetch courses dynamically using SerpAPI Google search (single skill)"""
+    try:
+        # Search for courses related to the skill
+        search_query = f'"{skill} course" online tutorial udemy coursera edx'
+        
+        params = {
+            "engine": "google",
+            "q": search_query,
+            "hl": "en",
+            "gl": "us",
+            "api_key": API_KEY,
+            "num": max_results * 3  # Get more results to filter better ones
+        }
+        
+        search = GoogleSearch(params)
+        results = search.get_dict()
+        
+        courses = []
+        organic_results = results.get("organic_results", [])
+        
+        course_keywords = ["course", "tutorial", "learn", "training", "class", "bootcamp", "certification"]
+        
+        for result in organic_results:
+            title = result.get("title", "")
+            link = result.get("link", "")
+            snippet = result.get("snippet", "")
+            
+            # Filter for course-related content
+            if any(keyword in title.lower() or keyword in snippet.lower() for keyword in course_keywords):
+                # Determine platform from URL
+                platform = "Online"
+                if "udemy.com" in link:
+                    platform = "Udemy"
+                elif "coursera.org" in link:
+                    platform = "Coursera"
+                elif "edx.org" in link:
+                    platform = "edX"
+                elif "youtube.com" in link:
+                    platform = "YouTube"
+                elif "pluralsight.com" in link:
+                    platform = "Pluralsight"
+                elif "linkedin.com/learning" in link:
+                    platform = "LinkedIn Learning"
+                
+                courses.append({
+                    "title": title,
+                    "platform": platform,
+                    "url": link,
+                    "description": snippet,
+                    "name": title  # For compatibility with existing code
+                })
+                
+                if len(courses) >= max_results:
+                    break
+        
+        return courses
+        
+    except Exception as e:
+        print(f"Error fetching courses for {skill}: {e}")
+        # Fallback to static database if API fails
+        return fetch_courses_from_static_db(skill, max_results)
+
+def fetch_courses_from_static_db(skill, max_results=COURSES_PER_SKILL):
+    """Fallback function to use static database"""
+    skill_key = skill.lower()
+    if skill_key in COURSES_DB:
+        # Convert static DB format to match dynamic format
+        static_courses = COURSES_DB[skill_key][:max_results]
+        return [{
+            "title": course.get("name", ""),
+            "platform": course.get("platform", ""),
+            "url": course.get("url", ""),
+            "description": f"Learn {skill} with this comprehensive course",
+            "name": course.get("name", "")
+        } for course in static_courses]
+    return []
 
 def fetch_courses_for_skill(skill, max_results=COURSES_PER_SKILL):
     skill_key = skill.lower()

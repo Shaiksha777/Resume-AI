@@ -7,7 +7,7 @@ class ExamPaper(models.Model):
     semester = models.CharField(max_length=20)  # Semester of the exam
     year = models.IntegerField()  # Year of the exam paper
     department = models.CharField(max_length=100, default='')
-    file = models.FileField(upload_to=r'C:\Users\Shaiksha\Desktop\DBMS_p\DBMS_p\examvault\media')  # Upload PDF files to the 'papers/' directory
+    file = models.FileField(upload_to=r'C:\Users\Shaiksha\Desktop\FSD_project\FSD_project\examvault\media')  # Upload PDF files to the 'papers/' directory
     uploaded_by = models.CharField(max_length=100)  # Name/ID of the uploader
 
     def __str__(self):
@@ -15,7 +15,7 @@ class ExamPaper(models.Model):
 
 class Resume(models.Model):
     name = models.CharField(max_length=255)
-    resume_file = models.FileField(upload_to=r'C:\Users\Shaiksha\Desktop\DBMS_p\DBMS_p\examvault\media')  #resumes folder stores the uploaded files
+    resume_file = models.FileField(upload_to=r'C:\Users\Shaiksha\Desktop\FSD_project\FSD_project\examvault\media')  #resumes folder stores the uploaded files
 
     def __str__(self):
         return self.name

@@ -189,7 +189,7 @@
                         <p>Provider: <span class="provider">{{ c.platform|default:"YouTube" }}</span></p>
                         <p>Category: {{ group.skill|capfirst }}</p>
                     </div>
-                    <a href="{{ c.url|default:'https://www.youtube.com/results?search_query='|add:group.skill }}" target="_blank">
+                    <a href="{{ c.url|default:'https://www.youtube.com/results?search_query=' }}" target="_blank">
                         <button class="start-button">Start</button>
                     </a>
                 </div>
